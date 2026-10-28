@@ -1,0 +1,422 @@
+.food-feed {
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+  background: #101512;
+}
+
+.food-feed::-webkit-scrollbar {
+  display: none;
+}
+
+.food-feed__create-button {
+  position: fixed;
+  z-index: 20;
+  top: max(24px, env(safe-area-inset-top));
+  right: max(24px, env(safe-area-inset-right));
+  min-height: 48px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 999px;
+  background: #287a52;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  box-shadow: 0 5px 20px rgb(0 0 0 / 35%);
+}
+
+.food-feed__create-button:hover {
+  background: #216844;
+}
+
+.food-feed__create-button:focus-visible {
+  outline: 3px solid #83c69a;
+  outline-offset: 3px;
+}
+
+.food-reel {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  isolation: isolate;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  background: #101512;
+}
+
+.food-reel__video {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #101512;
+}
+
+.food-reel::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(180deg, rgb(0 0 0 / 65%) 0%, rgb(0 0 0 / 22%) 34%, transparent 58%);
+  content: '';
+  pointer-events: none;
+}
+
+.food-reel__top {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  width: min(100% - 40px, 620px);
+  margin: 0 auto;
+  padding-top: max(28px, env(safe-area-inset-top));
+  color: #fff;
+  text-shadow: 0 1px 8px rgb(0 0 0 / 40%);
+}
+
+.food-reel__title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.food-reel__description {
+  display: -webkit-box;
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.food-reel__store-button {
+  min-height: 44px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #202722;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  text-shadow: none;
+  transition: background-color 150ms ease, transform 150ms ease;
+}
+
+.food-reel__store-button:hover {
+  background: #e8f2ec;
+  transform: translateY(-1px);
+}
+
+.food-reel__store-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+.food-reel__store-button:focus-visible {
+  outline: 3px solid #83c69a;
+  outline-offset: 3px;
+}
+
+.food-reel__love-button,
+.food-reel__save-button,
+.food-reel__comments-button {
+  position: absolute;
+  right: max(24px, env(safe-area-inset-right));
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  width: 56px;
+  min-height: 76px;
+  padding: 10px 8px;
+  border: 0;
+  border-radius: 999px;
+  background: rgb(16 21 18 / 55%);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  backdrop-filter: blur(8px);
+}
+
+.food-reel__love-button {
+  bottom: max(108px, calc(env(safe-area-inset-bottom) + 82px));
+}
+
+.food-reel__save-button {
+  bottom: max(188px, calc(env(safe-area-inset-bottom) + 160px));
+}
+
+.food-reel__comments-button {
+  bottom: max(270px, calc(env(safe-area-inset-bottom) + 242px));
+}
+
+.food-reel__love-button:hover:not(:disabled),
+.food-reel__save-button:hover:not(:disabled),
+.food-reel__comments-button:hover {
+  background: rgb(16 21 18 / 78%);
+}
+
+.food-reel__love-button.is-loved {
+  color: #ff5b78;
+}
+
+.food-reel__love-button:disabled,
+.food-reel__save-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.food-reel__love-button:focus-visible,
+.food-reel__save-button:focus-visible,
+.food-reel__comments-button:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+
+.food-reel__heart {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.food-reel__save-button {
+  place-content: center;
+}
+
+.food-reel__comments-button {
+  grid-template-rows: auto auto;
+}
+
+.food-reel__save-button .food-reel__action-icon,
+.food-reel__comments-button .food-reel__action-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.food-reel__action-count {
+  font-size: 0.875rem;
+  line-height: 1.2;
+}
+
+.food-reel__save-button.is-saved {
+  color: #83c69a;
+}
+
+.food-comments-backdrop {
+  position: fixed;
+  z-index: 30;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-top: max(20px, env(safe-area-inset-top));
+  background: rgb(0 0 0 / 58%);
+}
+
+.food-comments-panel {
+  display: flex;
+  width: min(100%, 680px);
+  max-height: min(82dvh, 760px);
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 22px 22px 0 0;
+  background: #fff;
+  color: #202722;
+  box-shadow: 0 -12px 40px rgb(0 0 0 / 22%);
+}
+
+.food-comments-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 22px 16px;
+  border-bottom: 1px solid #e2e7e2;
+}
+
+.food-comments-panel__header h2 {
+  font-size: 1.15rem;
+}
+
+.food-comments-panel__header p {
+  margin-top: 4px;
+  color: #737d76;
+  font-size: 0.85rem;
+}
+
+.food-comments-panel__close {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: #f0f3f0;
+  color: #202722;
+  cursor: pointer;
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.food-comments-panel__list {
+  display: flex;
+  min-height: 160px;
+  flex: 1;
+  flex-direction: column;
+  gap: 18px;
+  overflow-y: auto;
+  padding: 20px 22px;
+}
+
+.food-comments-panel__empty {
+  margin: auto;
+  color: #737d76;
+  text-align: center;
+}
+
+.food-comment {
+  display: grid;
+  gap: 6px;
+}
+
+.food-comment__author {
+  color: #202722;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.food-comment__author span {
+  color: #287a52;
+  font-size: 0.78rem;
+}
+
+.food-comment__text {
+  color: #414a44;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.food-comment__reply {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0 0 14px;
+  padding: 10px 12px;
+  border-left: 3px solid #83c69a;
+  border-radius: 0 10px 10px 0;
+  background: #f3f8f4;
+}
+
+.food-comment__reply-form,
+.food-comments-panel__form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.food-comment__reply-form {
+  margin-top: 6px;
+}
+
+.food-comments-panel__form {
+  padding: 14px 18px max(16px, env(safe-area-inset-bottom));
+  border-top: 1px solid #e2e7e2;
+}
+
+.food-comment__reply-form input,
+.food-comments-panel__form input {
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+  padding: 0 14px;
+  border: 1px solid #d5ddd6;
+  border-radius: 999px;
+  background: #f8faf8;
+  color: #202722;
+  font: inherit;
+}
+
+.food-comment__reply-form button,
+.food-comments-panel__form button {
+  min-width: 64px;
+  height: 42px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: #287a52;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+
+.food-comment__reply-form button:disabled,
+.food-comments-panel__form button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.food-comment__reply-form input:focus-visible,
+.food-comments-panel__form input:focus-visible,
+.food-comment__reply-form button:focus-visible,
+.food-comments-panel__form button:focus-visible,
+.food-comments-panel__close:focus-visible {
+  outline: 3px solid #74aa89;
+  outline-offset: 2px;
+}
+
+.food-comments-panel__error {
+  margin: 12px 22px 0;
+  color: #a3211a;
+  font-size: 0.9rem;
+}
+
+.food-feed__love-error {
+  position: fixed;
+  z-index: 10;
+  right: 88px;
+  bottom: max(32px, env(safe-area-inset-bottom));
+  max-width: min(70vw, 360px);
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #fff;
+  color: #8c1d18;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 18px rgb(0 0 0 / 25%);
+}
+
+.food-feed-state {
+  display: grid;
+  min-height: 100vh;
+  min-height: 100dvh;
+  place-items: center;
+  padding: 24px;
+  background: #101512;
+  color: #fff;
+  font-size: 1rem;
+  text-align: center;
+}
+
+@media (min-width: 700px) {
+  .food-reel {
+    background: #090c0a;
+  }
+
+  .food-reel__top {
+    width: min(100% - 56px, 540px);
+  }
+}
