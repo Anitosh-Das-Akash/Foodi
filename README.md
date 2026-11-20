@@ -1,23 +1,46 @@
-# Foodies
+# 🍔 Foodies — Short-Form Food Video Platform
 
-Foodies is a short-form food video application. Users can discover restaurant videos, visit food partner profiles, love and save posts, and comment. Food partners can publish videos and reply to comments on their own posts.
+A full-stack food video sharing platform where users can discover restaurant videos, interact with food content, and explore food partners. Restaurants and food partners can showcase their food through short videos and engage with their audience.
 
-## Features
+## ✨ Features
 
-- Full-screen, vertically scrolling video feed with snap scrolling.
-- User registration and sign-in.
-- Food partner registration and sign-in.
-- Food partner profiles with restaurant details and uploaded videos.
-- Upload food videos with a title and description.
-- Love and save videos as a user.
-- View public love counts and post-specific comments.
-- Reply to comments as the food partner who owns the post.
-- User profile and saved-video pages with bottom navigation.
+### 👤 User Features
+- User registration and authentication
+- Browse a full-screen, vertically scrolling food video feed
+- Like and save food videos
+- Comment on videos
+- View user profiles
+- Access saved videos
 
-## Project structure
+### 🏪 Food Partner Features
+- Food partner registration and authentication
+- Create and manage food partner profiles
+- Upload food videos with titles and descriptions
+- View restaurant and food partner profiles
+- Reply to comments on their own videos
+
+### 🎬 Video Experience
+- Full-screen vertical video feed
+- Snap scrolling between videos
+- Public like counts
+- Video-specific comments
+
+## 🛠️ Tech Stack
+
+| Category | Technologies |
+|---|---|
+| Frontend | React.js, Vite |
+| Backend | Node.js, Express.js |
+| Database | MongoDB, Mongoose |
+| Authentication | Cookie-based authentication |
+| Media Storage | ImageKit |
+| API Testing | Postman |
+
+## 📁 Project Structure
 
 ```text
-Foodies/
+Foodi/
+├── .postman/
 ├── backend/
 │   ├── server.js
 │   └── src/
@@ -28,86 +51,146 @@ Foodies/
 │       ├── models/
 │       ├── routes/
 │       └── services/
-└── frontend/
-    ├── index.html
-    └── src/
-        ├── components/
-        ├── pages/
-        └── routes/
+│
+├── frontend/
+│   ├── index.html
+│   └── src/
+│       ├── components/
+│       ├── pages/
+│       └── routes/
+│
+├── .gitignore
+└── README.md
 ```
 
-The backend is an Express API using MongoDB through Mongoose. Uploaded video files are stored using ImageKit. The frontend is a React single-page application built with Vite.
+## ⚙️ Requirements
 
-## Requirements
+Before running the project, make sure you have:
 
-- Node.js and npm
-- MongoDB connection string
-- ImageKit account and private API key for video uploads
+- Node.js
+- npm
+- MongoDB
+- ImageKit account and private API key
 
-## Configuration
+## 🔐 Environment Configuration
 
-Create `backend/.env` with the following values:
+Create a `.env` file inside the `backend` directory:
 
 ```env
 MONGO_URI=mongodb://127.0.0.1:27017/foodies
-JWT_SECRET=replace-with-a-long-random-secret
-IMAGEKIT_PRIVATE_KEY=your-imagekit-private-key
+JWT_SECRET=your_long_random_secret
+IMAGEKIT_PRIVATE_KEY=your_imagekit_private_key
 ```
 
-Use your own MongoDB connection string and ImageKit private key. Keep `.env` files and credentials private; do not commit them to source control.
+Use your own MongoDB connection string and ImageKit credentials.
 
-The frontend currently calls the backend at `http://localhost:3000`, and the backend allows the Vite development origin `http://localhost:5173`. If you change either port or deploy the application, update the API URL and CORS origin to match.
+**Important:** Never commit your `.env` file or expose private API keys on GitHub.
 
-## Run locally
+## 🚀 Installation & Setup
 
-Open two terminals from the project directory.
+### 1. Clone the repository
 
-### Start the backend
+```bash
+git clone https://github.com/Anitosh-Das-Akash/Foodi.git
+```
 
-```powershell
+```bash
+cd Foodi
+```
+
+### 2. Set up the Backend
+
+```bash
 cd backend
 npm install
+```
+
+Create your `.env` file and configure the required environment variables.
+
+Start the backend:
+
+```bash
 node server.js
 ```
 
-The API starts on `http://localhost:3000` after it connects to MongoDB.
+The backend runs at:
 
-### Start the frontend
+`http://localhost:3000`
 
-```powershell
-cd frontend
+### 3. Set up the Frontend
+
+Open another terminal:
+
+```bash
+cd Foodi/frontend
 npm install
 npm run dev
 ```
 
-Open the Vite URL shown in the terminal, normally `http://localhost:5173`.
+The frontend runs at:
 
-## Main application routes
+`http://localhost:5173`
 
-| Route | Purpose |
-| --- | --- |
+## 🔗 Main Application Routes
+
+| Route | Description |
+|---|---|
 | `/users/register` | User registration |
-| `/users/login` | User sign-in |
+| `/users/login` | User login |
 | `/user/dashboard` | User video feed |
-| `/user/saved` | Videos saved by the signed-in user |
-| `/user/profile` | Signed-in user's profile |
+| `/user/saved` | Saved videos |
+| `/user/profile` | User profile |
 | `/foodpartner/register` | Food partner registration |
-| `/foodpartner/login` | Food partner sign-in |
-| `/foodpartner/dashboard` | Food partner video feed |
-| `/foodpartner/create` | Create and upload a food video |
-| `/foodpartner/:partnerId` | Food partner profile and videos |
+| `/foodpartner/login` | Food partner login |
+| `/foodpartner/dashboard` | Food partner dashboard |
+| `/foodpartner/create` | Upload food videos |
+| `/foodpartner/:partnerId` | Food partner profile |
 
-Authentication uses an HTTP cookie. User-only actions, such as loving, saving, or commenting on a post, require the user to be signed in. Comment replies require the owning food partner to be signed in.
+## 🔒 Authentication & Security
 
-## Development commands
+- Authentication uses HTTP cookies.
+- User-only actions require user authentication.
+- Food partner replies require the owning food partner to be authenticated.
+- Environment credentials must remain private.
 
-Run these commands from `frontend/`:
+## 🌐 Development Configuration
 
-```powershell
+The frontend currently communicates with the backend at:
+
+`http://localhost:3000`
+
+The backend allows the Vite development origin:
+
+`http://localhost:5173`
+
+Update the API URL and CORS configuration when deploying the application.
+
+## 📦 Development Commands
+
+### Frontend
+
+```bash
 npm run dev
 npm run build
 npm run lint
 npm run preview
 ```
 
-The backend package does not currently define start, development, or automated test scripts. Start it with `node server.js` from `backend/`.
+### Backend
+
+```bash
+node server.js
+```
+
+The backend package currently does not define separate start, development, or automated test scripts.
+
+---
+
+<p align="center">
+  <b>Built with ❤️ by Anitosh Das</b>
+</p>
+
+<p align="center">
+  <i>Learning, building, and creating meaningful web experiences.</i>
+</p>
+
