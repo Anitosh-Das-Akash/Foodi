@@ -1,174 +1,176 @@
-# 📚 CampusBookHub
+🍔 Foodies — Short-Form Food Video Platform
 
-### A University Used Book Sharing Platform
+A full-stack food video sharing platform where users can discover restaurant videos, interact with food content, and explore food partners. Restaurants and food partners can showcase their food through short videos and engage with their audience.
 
-CampusBookHub is a full-stack web application designed to help university students buy, sell, exchange, and share used academic books within their university community.
+✨ Features
 
-The platform provides an easy way for students to find affordable academic books and connect with other students.
+👤 User Features
 
-## ✨ Key Features
+- User registration and authentication
+- Browse a full-screen, vertically scrolling food video feed
+- Like and save food videos
+- Comment on videos
+- View user profiles
+- Access saved videos
 
-### 👤 Authentication & User Management
-- User registration and login
-- JWT authentication with HTTP-only cookies
-- User profile management
-- Profile picture upload
+🏪 Food Partner Features
 
-### 📚 Book Management
-- Add, edit, and manage book listings
-- Browse and search available books
-- Filter books by department, condition, and exchange type
-- Contact book sellers
+- Food partner registration and authentication
+- Create and manage food partner profiles
+- Upload food videos with titles and descriptions
+- View restaurant and food partner profiles
+- Reply to comments on their own videos
 
-### 🔄 Book Exchange System
-- Send and manage book requests
-- Accept or complete book exchanges
-- Manage exchange activities
+🎬 Video Experience
 
-### ⭐ Engagement Features
-- Add books to wishlist
-- Notifications
-- Book reviews and ratings
-- Responsive user interface
+- Full-screen vertical video feed
+- Snap scrolling between videos
+- Public like counts
+- Video-specific comments
 
-## 🛠️ Technology Stack
+🛠️ Tech Stack
 
-| Frontend | Backend |
-|---|---|
-| React.js | Node.js |
-| Vite | Express.js |
-| Tailwind CSS | MongoDB |
-| React Router | Mongoose |
-| Axios | JWT |
-| | Bcrypt.js |
-| | Multer |
+Category| Technologies
+Frontend| React.js, Vite
+Backend| Node.js, Express.js
+Database| MongoDB, Mongoose
+Authentication| Cookie-based authentication
+Media Storage| ImageKit
+API Testing| Postman
 
-**Cloud Services**
-- Cloudinary — Image storage
-- MongoDB Atlas — Cloud database
+📁 Project Structure
 
-## 📁 Project Structure
-
-```text
-CampusBookHub/
-│
+Foodi/
+├── .postman/
 ├── backend/
-│   ├── src/
-│   │   ├── config/
-│   │   ├── controllers/
-│   │   ├── middlewares/
-│   │   ├── models/
-│   │   ├── routes/
-│   │   └── services/
 │   ├── server.js
-│   └── package.json
+│   └── src/
+│       ├── app.js
+│       ├── controllers/
+│       ├── db/
+│       ├── middlewares/
+│       ├── models/
+│       ├── routes/
+│       └── services/
 │
 ├── frontend/
-│   ├── public/
-│   ├── src/
-│   │   ├── Components/
-│   │   ├── Context/
-│   │   ├── Pages/
-│   │   └── Services/
-│   └── package.json
+│   ├── index.html
+│   └── src/
+│       ├── components/
+│       ├── pages/
+│       └── routes/
 │
+├── .gitignore
 └── README.md
-```
 
-## ⚙️ Installation & Setup
+⚙️ Requirements
 
-### Prerequisites
-- Node.js and npm
-- MongoDB Atlas account or local MongoDB
-- Cloudinary account
+Before running the project, make sure you have:
 
-### 1. Clone the Repository
+- Node.js
+- npm
+- MongoDB
+- ImageKit account and private API key
 
-```bash
-git clone https://github.com/Anitosh-Das-Akash/CampusBookHub.git
-cd CampusBookHub
-```
+🔐 Environment Configuration
 
-### 2. Backend Setup
+Create a ".env" file inside the "backend" directory:
 
-```bash
+MONGO_URI=mongodb://127.0.0.1:27017/foodies
+JWT_SECRET=your_long_random_secret
+IMAGEKIT_PRIVATE_KEY=your_imagekit_private_key
+
+Use your own MongoDB connection string and ImageKit credentials.
+
+Important: Never commit your ".env" file or expose private API keys on GitHub.
+
+🚀 Installation & Setup
+
+1. Clone the repository
+
+git clone https://github.com/Anitosh-Das-Akash/Foodi.git
+
+cd Foodi
+
+2. Set up the Backend
+
 cd backend
 npm install
-```
 
-Create a `.env` file inside the backend directory:
-
-```env
-PORT=3000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
-NODE_ENV=development
-
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
-
-FRONTEND_URL=http://localhost:5173
-```
+Create your ".env" file and configure the required environment variables.
 
 Start the backend:
 
-```bash
-npm run dev
-```
+node server.js
 
-### 3. Frontend Setup
+The backend runs at:
+
+"http://localhost:3000"
+
+3. Set up the Frontend
 
 Open another terminal:
 
-```bash
-cd frontend
+cd Foodi/frontend
 npm install
-```
-
-Create a `.env` file inside the frontend directory:
-
-```env
-VITE_API_URL=http://localhost:3000/api
-```
-
-Start the frontend:
-
-```bash
 npm run dev
-```
 
-Open the local URL provided by Vite, normally:
+The frontend runs at:
 
-`http://localhost:5173`
+"http://localhost:5173"
 
-## 🔐 Security
+🔗 Main Application Routes
 
-- Authentication uses JWT and HTTP-only cookies.
-- Passwords are protected using bcrypt.
-- Sensitive configuration is stored in environment variables.
-- Never commit `.env` files or expose private API credentials.
+Route| Description
+"/users/register"| User registration
+"/users/login"| User login
+"/user/dashboard"| User video feed
+"/user/saved"| Saved videos
+"/user/profile"| User profile
+"/foodpartner/register"| Food partner registration
+"/foodpartner/login"| Food partner login
+"/foodpartner/dashboard"| Food partner dashboard
+"/foodpartner/create"| Upload food videos
+"/foodpartner/:partnerId"| Food partner profile
 
-## 🌐 Live Demo
+🔒 Authentication & Security
 
-[Visit CampusBookHub](https://campus-book-hub.vercel.app/)
+- Authentication uses HTTP cookies.
+- User-only actions require user authentication.
+- Food partner replies require the owning food partner to be authenticated.
+- Environment credentials must remain private.
 
-## 👨‍💻 Developer
+🌐 Development Configuration
 
-**Anitosh Das**
+The frontend currently communicates with the backend at:
 
-- GitHub: [Anitosh-Das-Akash](https://github.com/Anitosh-Das-Akash)
+"http://localhost:3000"
 
-## 📄 License
+The backend allows the Vite development origin:
 
-This project is currently developed as a personal project.
+"http://localhost:5173"
+
+Update the API URL and CORS configuration when deploying the application.
+
+📦 Development Commands
+
+Frontend
+
+npm run dev
+npm run build
+npm run lint
+npm run preview
+
+Backend
+
+node server.js
+
+The backend package currently does not define separate start, development, or automated test scripts.
 
 ---
 
 <p align="center">
   <b>Built with ❤️ by Anitosh Das</b>
-</p>
-
-<p align="center">
-  <i>Connecting students through books and knowledge.</i>
+</p><p align="center">
+  <i>Learning, building, and creating meaningful web experiences.</i>
 </p>
