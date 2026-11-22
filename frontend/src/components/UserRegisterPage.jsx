@@ -1,11 +1,11 @@
 
 import AuthLayout from './AuthLayout';
-import axios from 'axios';
-
-import {useNavigate} from 'react-router-dom'
+import api from '../api/axios';
+import { useNavigate } from 'react-router-dom';
 
 const UserRegisterPage = () => {
-const navigate=useNavigate()
+  const navigate = useNavigate();
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -16,20 +16,17 @@ const navigate=useNavigate()
     const password = formData.get('password');
 
     try {
-      const response = await axios.post(
-        'http://localhost:3000/api/auth/users/register',
+      const response = await api.post(
+        '/api/auth/users/register',
         {
           username,
           email,
           password,
-        },{
-          withCredentials: true, // Include credentials (cookies) in the request
         }
       );
 
       console.log('Registration successful:', response.data);
-      navigate('/users/login')
-
+      navigate('/users/login');
 
     } catch (error) {
       console.error(

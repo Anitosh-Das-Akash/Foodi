@@ -1,5 +1,6 @@
+
 import { useState } from 'react'
-import axios from 'axios'
+import api from '../../api/axios'
 import { Link, useNavigate } from 'react-router-dom'
 import './CreateFood.css'
 
@@ -30,9 +31,7 @@ const CreateFood = () => {
     setIsSubmitting(true)
 
     try {
-      await axios.post('http://localhost:3000/api/food/food-item', formData, {
-        withCredentials: true,
-      })
+      await api.post('/api/food/food-item', formData)
       navigate('/foodpartner/dashboard')
     } catch (error) {
       console.error('Create food item error:', error)

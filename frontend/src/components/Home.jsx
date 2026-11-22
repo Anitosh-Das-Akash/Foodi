@@ -1,6 +1,6 @@
 
 import { useEffect, useRef, useState } from 'react'
-import axios from 'axios'
+import api from '../api/axios'
 import { useNavigate } from 'react-router-dom'
 import UserBottomNav from './UserBottomNav'
 import './Home.css'
@@ -22,7 +22,9 @@ const Home = ({ isFoodPartner = false }) => {
   const [currentPartnerId, setCurrentPartnerId] = useState(null)
   const [isSubmittingComment, setIsSubmittingComment] = useState(false)
   const [replyingToCommentId, setReplyingToCommentId] = useState(null)
+
   const videoRefs = useRef([])
+
   const createFoodButton = isFoodPartner ? (
     <button
       className="food-feed__create-button"
@@ -43,10 +45,10 @@ const Home = ({ isFoodPartner = false }) => {
 
     try {
       const method = foodItem.isLoved ? 'delete' : 'post'
-      const response = await axios({
+
+      const response = await api({
         method,
-        url: `http://localhost:3000/api/food/${foodItem._id}/love`,
-        withCredentials: true,
+        url: `/api/food/${foodItem._id}/love`,
       })
 
       setFoodItems((items) =>
@@ -62,6 +64,7 @@ const Home = ({ isFoodPartner = false }) => {
       )
     } catch (error) {
       console.error('Update video love error:', error)
+
       setLoveError(
         error.response?.status === 400 || error.response?.status === 401
           ? 'Sign in as a user to love videos.'
@@ -82,10 +85,10 @@ const Home = ({ isFoodPartner = false }) => {
 
     try {
       const method = foodItem.isSaved ? 'delete' : 'post'
-      const response = await axios({
+
+      const response = await api({
         method,
-        url: `http://localhost:3000/api/food/${foodItem._id}/save`,
-        withCredentials: true,
+        url: `/api/food/${foodItem._id}/save`,
       })
 
       setFoodItems((items) =>
@@ -97,6 +100,7 @@ const Home = ({ isFoodPartner = false }) => {
       )
     } catch (error) {
       console.error('Save food item error:', error)
+
       setLoveError(
         error.response?.status === 400 || error.response?.status === 401
           ? 'Sign in as a user to save videos.'
@@ -116,12 +120,14 @@ const Home = ({ isFoodPartner = false }) => {
     setReplyText('')
 
     try {
-      const response = await axios.get(
-        `http://localhost:3000/api/food/${foodItem._id}/comments`,
+      const response = await api.get(
+        `/api/food/${foodItem._id}/comments`,
       )
+
       setComments(response.data.comments)
     } catch (error) {
       console.error('Fetch post comments error:', error)
+
       setCommentError(
         error.response?.data?.message || 'Unable to load comments. Please try again.',
       )
@@ -139,17 +145,23 @@ const Home = ({ isFoodPartner = false }) => {
 
   const handleCommentSubmit = async (event) => {
     event.preventDefault()
+
     if (!activeCommentFoodId || !commentText.trim()) return
 
     setIsSubmittingComment(true)
     setCommentError('')
+
     try {
-      const response = await axios.post(
-        `http://localhost:3000/api/food/${activeCommentFoodId}/comments`,
+      const response = await api.post(
+        `/api/food/${activeCommentFoodId}/comments`,
         { text: commentText },
-        { withCredentials: true },
       )
-      setComments((existingComments) => [...existingComments, response.data.comment])
+
+      setComments((existingComments) => [
+        ...existingComments,
+        response.data.comment,
+      ])
+
       setFoodItems((items) =>
         items.map((item) =>
           item._id === activeCommentFoodId
@@ -157,9 +169,11 @@ const Home = ({ isFoodPartner = false }) => {
             : item,
         ),
       )
+
       setCommentText('')
     } catch (error) {
       console.error('Create post comment error:', error)
+
       setCommentError(
         error.response?.status === 400 || error.response?.status === 401
           ? 'Sign in as a user to comment.'
@@ -172,24 +186,28 @@ const Home = ({ isFoodPartner = false }) => {
 
   const handleReplySubmit = async (event, commentId) => {
     event.preventDefault()
+
     if (!activeCommentFoodId || !replyText.trim()) return
 
     setReplyingToCommentId(commentId)
     setCommentError('')
+
     try {
-      const response = await axios.post(
-        `http://localhost:3000/api/food/${activeCommentFoodId}/comments/${commentId}/reply`,
+      const response = await api.post(
+        `/api/food/${activeCommentFoodId}/comments/${commentId}/reply`,
         { text: replyText },
-        { withCredentials: true },
       )
+
       setComments((existingComments) =>
         existingComments.map((comment) =>
           comment.id === commentId ? response.data.comment : comment,
         ),
       )
+
       setReplyText('')
     } catch (error) {
       console.error('Reply to post comment error:', error)
+
       setCommentError(
         error.response?.status === 400 || error.response?.status === 401
           ? 'Sign in as the food partner to reply.'
@@ -204,17 +222,18 @@ const Home = ({ isFoodPartner = false }) => {
     if (!isFoodPartner) return undefined
 
     let isMounted = true
-    axios.get('http://localhost:3000/api/auth/foodpartner/me', {
-      withCredentials: true,
-    }).then((response) => {
-      if (isMounted) {
-        setCurrentPartnerId(response.data.id)
-      }
-    }).catch((error) => {
-      if (error.response?.status !== 400 && error.response?.status !== 401) {
-        console.error('Fetch current food partner error:', error)
-      }
-    })
+
+    api.get('/api/auth/foodpartner/me')
+      .then((response) => {
+        if (isMounted) {
+          setCurrentPartnerId(response.data.id)
+        }
+      })
+      .catch((error) => {
+        if (error.response?.status !== 400 && error.response?.status !== 401) {
+          console.error('Fetch current food partner error:', error)
+        }
+      })
 
     return () => {
       isMounted = false
@@ -226,10 +245,7 @@ const Home = ({ isFoodPartner = false }) => {
 
     const fetchFoodItems = async () => {
       try {
-        const response = await axios.get(
-          'http://localhost:3000/api/food/',
-          { withCredentials: true }
-        )
+        const response = await api.get('/api/food/')
 
         if (isMounted) {
           setFoodItems(response.data.foodItems || [])
@@ -325,12 +341,14 @@ const Home = ({ isFoodPartner = false }) => {
   return (
     <>
       {createFoodButton}
+
       <main className="food-feed" aria-label="Food videos">
         {loveError && (
           <p className="food-feed__love-error" role="alert">
             {loveError}
           </p>
         )}
+
         {foodItems.map((foodItem, index) => {
           const partnerId =
             foodItem.foodpartnerId ||
@@ -374,6 +392,7 @@ const Home = ({ isFoodPartner = false }) => {
                   {partnerId ? 'Visit store' : 'Store unavailable'}
                 </button>
               </div>
+
               <button
                 className={`food-reel__love-button${foodItem.isLoved ? ' is-loved' : ''}`}
                 type="button"
@@ -387,6 +406,7 @@ const Home = ({ isFoodPartner = false }) => {
                 </span>
                 <span>{foodItem.loveCount || 0}</span>
               </button>
+
               <button
                 className={`food-reel__save-button${foodItem.isSaved ? ' is-saved' : ''}`}
                 type="button"
@@ -399,6 +419,7 @@ const Home = ({ isFoodPartner = false }) => {
                   {foodItem.isSaved ? '▣' : '▢'}
                 </span>
               </button>
+
               <button
                 className="food-reel__comments-button"
                 type="button"
@@ -414,6 +435,7 @@ const Home = ({ isFoodPartner = false }) => {
           )
         })}
       </main>
+
       {activeCommentFoodId && (
         <div
           className="food-comments-backdrop"
@@ -434,6 +456,7 @@ const Home = ({ isFoodPartner = false }) => {
                 <h2 id="food-comments-title">Comments</h2>
                 <p>{comments.length} {comments.length === 1 ? 'comment' : 'comments'}</p>
               </div>
+
               <button
                 className="food-comments-panel__close"
                 type="button"
@@ -458,6 +481,7 @@ const Home = ({ isFoodPartner = false }) => {
                   const commentFood = foodItems.find(
                     (item) => item._id === activeCommentFoodId,
                   )
+
                   const ownsPost =
                     isFoodPartner &&
                     currentPartnerId &&
@@ -468,6 +492,7 @@ const Home = ({ isFoodPartner = false }) => {
                     <article className="food-comment" key={comment.id}>
                       <p className="food-comment__author">{comment.username}</p>
                       <p className="food-comment__text">{comment.text}</p>
+
                       {comment.reply && (
                         <div className="food-comment__reply">
                           <p className="food-comment__author">
@@ -476,6 +501,7 @@ const Home = ({ isFoodPartner = false }) => {
                           <p className="food-comment__text">{comment.reply.text}</p>
                         </div>
                       )}
+
                       {ownsPost && !comment.reply && (
                         <form
                           className="food-comment__reply-form"
@@ -490,6 +516,7 @@ const Home = ({ isFoodPartner = false }) => {
                             aria-label={`Reply to ${comment.username}`}
                             required
                           />
+
                           <button
                             type="submit"
                             disabled={
@@ -520,6 +547,7 @@ const Home = ({ isFoodPartner = false }) => {
                 aria-label="Add a comment"
                 required
               />
+
               <button
                 type="submit"
                 disabled={!commentText.trim() || isSubmittingComment}
@@ -530,6 +558,7 @@ const Home = ({ isFoodPartner = false }) => {
           </section>
         </div>
       )}
+
       {!isFoodPartner && <UserBottomNav />}
     </>
   )

@@ -10,13 +10,13 @@ const router=express.Router()
 router.post("/users/register",authController.registerUser)
 router.post("/users/login",authController.loginUser)
 router.get("/users/me",authMiddleware.userAuth,authController.getUserSession)
-router.get("/users/logout",authController.logoutUser)
+router.post("/users/logout",authController.logoutUser)
 
 /* food partner routes*/
 
 router.post("/foodpartner/register",authController.registerFoodPartner)
 router.post("/foodpartner/login",authController.loginFoodPartner)
 router.get("/foodpartner/me",authMiddleware.foodAuth,authController.getFoodPartnerSession)
-router.get("/foodpartner/logout",authController.logoutFoodPartner)
+router.post("/foodpartner/logout",authController.logoutFoodPartner)
 
 module.exports=router;

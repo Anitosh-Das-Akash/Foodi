@@ -1,100 +1,110 @@
+
 const jwt = require("jsonwebtoken");
-const foodModel=require("../models/food.model")
-const userModel=require("../models/users.model")
-const foodPartnerModel=require("../models/foodpartner.model")
+const userModel = require("../models/users.model");
+const foodPartnerModel = require("../models/foodpartner.model");
 
-async function foodAuth(req,res,next) {
+async function foodAuth(req, res, next) {
+    const token = req.cookies?.tokens;
 
-    const tokens=req.cookies.tokens;
-
-    if(!tokens){
-        return res.status(400).json({
-            message:"Unauthorized access"
-        })
+    if (!token) {
+        return res.status(401).json({
+            message: "Unauthorized access"
+        });
     }
 
-    try{
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        const decoded=await jwt.verify(tokens,process.env.JWT_SECRET)
-        
-        const foodPartner=await foodPartnerModel.findById(decoded.id);
+        const foodPartner = await foodPartnerModel.findById(decoded.id);
 
-        if(!foodPartner){
+        if (!foodPartner) {
             return res.status(401).json({
-                message:"Food partner account not found"
-            })
+                message: "Food partner account not found"
+            });
         }
 
-        req.foodPartner=foodPartner;
+        req.foodPartner = foodPartner;
+        next();
 
-        next()
-
-
-    }catch(err){
-
-        return res.status(400).json({
-            message:"Invalid tokens",
-            error:err.message
-        })
-
-    }
-    
-}
-
-async function userAuth(req,res,next){
-    const tokens=req.cookies.tokens;
-    if(!tokens){
-        return res.status(400).json({
-            message:"Unauthorized Login"
-        })
-    }
-
-    try{
-
-        const decoded=jwt.verify(tokens,process.env.JWT_SECRET)
-        const user= await userModel.findById(decoded.id)
-        if(!user){
+    } catch (err) {
+        if (
+            err.name === "JsonWebTokenError" ||
+            err.name === "TokenExpiredError"
+        ) {
             return res.status(401).json({
-                message:"User account not found"
-            })
+                message: "Invalid or expired token"
+            });
         }
-        if(!user){
-            return res.status(401).json({
-                message:"User account not found"
-            })
-        }
-        req.user= user
-        next()
 
-    }catch(err){
-        console.log(err);
-        
-        return res.status(400).json({
-
-            message:"Invalid Tokens"
-            
-        })
+        next(err);
     }
 }
 
-async function optionalUserAuth(req,res,next){
-    const tokens=req.cookies?.tokens;
-    if(!tokens){
-        return next()
+async function userAuth(req, res, next) {
+    const token = req.cookies?.tokens;
+
+    if (!token) {
+        return res.status(401).json({
+            message: "Unauthorized login"
+        });
     }
 
-    try{
-        const decoded=jwt.verify(tokens,process.env.JWT_SECRET)
-        req.user=await userModel.findById(decoded.id) || undefined
-        next()
-    }catch(err){
-        if(err.name === "JsonWebTokenError" || err.name === "TokenExpiredError"){
-            console.warn("Optional user authentication failed:",err.message)
-            return next()
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        const user = await userModel.findById(decoded.id);
+
+        if (!user) {
+            return res.status(401).json({
+                message: "User account not found"
+            });
         }
 
-        next(err)
+        req.user = user;
+        next();
+
+    } catch (err) {
+        if (
+            err.name === "JsonWebTokenError" ||
+            err.name === "TokenExpiredError"
+        ) {
+            return res.status(401).json({
+                message: "Invalid or expired token"
+            });
+        }
+
+        next(err);
     }
 }
 
-module.exports={foodAuth,userAuth,optionalUserAuth}
+async function optionalUserAuth(req, res, next) {
+    const token = req.cookies?.tokens;
+
+    if (!token) {
+        return next();
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        req.user = await userModel.findById(decoded.id) || undefined;
+
+        next();
+
+    } catch (err) {
+        if (
+            err.name === "JsonWebTokenError" ||
+            err.name === "TokenExpiredError"
+        ) {
+            return next();
+        }
+
+        next(err);
+    }
+}
+
+module.exports = {
+    foodAuth,
+    userAuth,
+    optionalUserAuth
+};

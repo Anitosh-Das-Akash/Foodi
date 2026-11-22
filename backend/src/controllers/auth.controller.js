@@ -1,107 +1,99 @@
-const userModel=require("../models/users.model")
-const foodpartnermodel=require("../models/foodpartner.model")
-const bcrypt=require("bcryptjs");
-const jwt=require("jsonwebtoken");
-const partnerModel = require("../models/foodpartner.model");
-const foodModel=require("../models/food.model")
 
+const userModel = require("../models/users.model");
+const foodPartnerModel = require("../models/foodpartner.model");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
-/**users auth functions */
+// Cookie settings for local and production environments
+const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    path: "/"
+};
 
-async function registerUser(req,res) {
+// Generate JWT token
+function generateToken(id) {
+    return jwt.sign(
+        { id },
+        process.env.JWT_SECRET,
+        { expiresIn: "7d" }
+    );
+}
 
-    const{username,email,password}=req.body;
+// Register User
+async function registerUser(req, res) {
+    const { username, email, password } = req.body;
 
-    const userAlreadyExist=await userModel.findOne({
-        email
-    })
+    const userAlreadyExist = await userModel.findOne({ email });
 
-    if(userAlreadyExist){
-        return res.status(400).json({
-            message:"UserName or Password Invalid"
-        })
+    if (userAlreadyExist) {
+        return res.status(409).json({
+            message: "Email already registered"
+        });
     }
 
-    const passwordHashed=await bcrypt.hash(password,10);
+    const passwordHashed = await bcrypt.hash(password, 10);
 
-    const user=await userModel.create({
+    const user = await userModel.create({
         username,
         email,
         password: passwordHashed
-    })
-
-    const tokens=jwt.sign({
-        id: user._id
-
-    },process.env.JWT_SECRET)
-
-    res.cookie("tokens",tokens);
-
-    res.status(201).json({
-        id:user._id,
-        username:user.username,
-        email:user.email
-
-    })
-
-    
-
-
-
-    
-
-}
-async function loginUser(req,res) {
-
-    const{email,password}=req.body;
-
-    const user=await userModel.findOne({
-        email
-    })
-
-    if(!user){
-        return res.status(400).json({
-            message:"Invalid user"
-        })
-    }
-
-    const isPasswordVarified= await bcrypt.compare(password,user.password);
-
-    if(!isPasswordVarified){
-        res.status(400).json({
-            message:"Invalid Password"
-        })
-    }
-
-    const tokens=jwt.sign({
-        id:user._id
-    },process.env.JWT_SECRET)
-
-     res.cookie("tokens", tokens, {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: false
     });
 
+    const token = generateToken(user._id);
 
-    res.status(201).json({
-        message:"Login Successfully"
-    })
+    res.cookie("tokens", token, cookieOptions);
 
-
-
-    
+    return res.status(201).json({
+        id: user._id,
+        username: user.username,
+        email: user.email
+    });
 }
 
-function logoutUser(req,res) {
+// Login User
+async function loginUser(req, res) {
+    const { email, password } = req.body;
 
-    res.clearCookie("tokens")
-    res.status(200).json({
-        message:"Logout successfully"
-    })
-    
+    const user = await userModel.findOne({ email });
+
+    if (!user) {
+        return res.status(401).json({
+            message: "Invalid email or password"
+        });
+    }
+
+    const isPasswordVerified = await bcrypt.compare(
+        password,
+        user.password
+    );
+
+    if (!isPasswordVerified) {
+        return res.status(401).json({
+            message: "Invalid email or password"
+        });
+    }
+
+    const token = generateToken(user._id);
+
+    res.cookie("tokens", token, cookieOptions);
+
+    return res.status(200).json({
+        message: "Login successfully"
+    });
 }
 
+// Logout User
+function logoutUser(req, res) {
+    res.clearCookie("tokens", cookieOptions);
+
+    return res.status(200).json({
+        message: "Logout successfully"
+    });
+}
+
+// Get User Session
 function getUserSession(req, res) {
     return res.status(200).json({
         id: req.user._id.toString(),
@@ -110,112 +102,94 @@ function getUserSession(req, res) {
     });
 }
 
-// food partner auth function
+// Register Food Partner
+async function registerFoodPartner(req, res) {
+    const { restaurentName, username, email, password } = req.body;
 
-async function registerFoodPartner(req,res) {
-    
-    const {restaurentName,username,email,password}=req.body;
+    const partnerExist = await foodPartnerModel.findOne({ email });
 
-    const partnerExist=await foodpartnermodel.findOne({
-        email
-    })
-
-    if(partnerExist){
-        return res.status(400).json({
-            meesgae:"User Already exists"
-        })
+    if (partnerExist) {
+        return res.status(409).json({
+            message: "Email already registered"
+        });
     }
 
-    const hashedPassword=await bcrypt.hash(password,10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    const partner=await partnerModel.create({
-
+    const partner = await foodPartnerModel.create({
         restaurentName,
         username,
         email,
         password: hashedPassword
-    })
-
-    const tokens= jwt.sign({
-        id:partner._id
-    },process.env.JWT_SECRET)
-
-    res.cookie("tokens",tokens, {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: false
     });
 
-    res.status(201).json({
+    const token = generateToken(partner._id);
+
+    res.cookie("tokens", token, cookieOptions);
+
+    return res.status(201).json({
         id: partner._id,
         restaurentName: partner.restaurentName,
-       username: partner.username,
+        username: partner.username,
         email: partner.email
-    })
-
-
-    
-}
-
-async function loginFoodPartner(req,res) {
-    
-    const {email,password}= req.body;
-
-    const foodPartner=await foodpartnermodel.findOne({
-        email
-    })
-
-    if(!foodPartner){
-
-        return res.status(400).json({
-            message:"You have to register first"
-        })
-    }
-
-    const isPasswordValid=await bcrypt.compare(password,foodPartner.password)
-
-    if(!isPasswordValid){
-        return res.status(400).json({
-            message:"Invalid Password"
-        })
-    }
-
-    const tokens=jwt.sign({
-        id: foodPartner._id
-    },process.env.JWT_SECRET)
-
-    res.cookie("tokens",tokens, {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: false
     });
-
-    res.status(201).json({
-        message:"Partner login successfully"
-    })
-
-    
-
-
-
-
-
-
 }
 
-function logoutFoodPartner(req,res){
+// Login Food Partner
+async function loginFoodPartner(req, res) {
+    const { email, password } = req.body;
 
-    res.clearCookie("tokens")
-    res.status(201).json({
-        message:"Logout Successfully"
-    })
+    const foodPartner = await foodPartnerModel.findOne({ email });
 
+    if (!foodPartner) {
+        return res.status(401).json({
+            message: "Invalid email or password"
+        });
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+        password,
+        foodPartner.password
+    );
+
+    if (!isPasswordValid) {
+        return res.status(401).json({
+            message: "Invalid email or password"
+        });
+    }
+
+    const token = generateToken(foodPartner._id);
+
+    res.cookie("tokens", token, cookieOptions);
+
+    return res.status(200).json({
+        message: "Partner login successfully"
+    });
 }
 
+// Logout Food Partner
+function logoutFoodPartner(req, res) {
+    res.clearCookie("tokens", cookieOptions);
+
+    return res.status(200).json({
+        message: "Logout successfully"
+    });
+}
+
+// Get Food Partner Session
 function getFoodPartnerSession(req, res) {
     return res.status(200).json({
         id: req.foodPartner._id.toString()
     });
 }
 
-module.exports={registerUser,loginUser,logoutUser,getUserSession,registerFoodPartner,loginFoodPartner,logoutFoodPartner,getFoodPartnerSession}
+module.exports = {
+    registerUser,
+    loginUser,
+    logoutUser,
+    getUserSession,
+    registerFoodPartner,
+    loginFoodPartner,
+    logoutFoodPartner,
+    getFoodPartnerSession
+};

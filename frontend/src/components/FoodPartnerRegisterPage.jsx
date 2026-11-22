@@ -1,6 +1,6 @@
 
 import AuthLayout from './AuthLayout';
-import axios from 'axios';
+import api from '../api/axios';
 import { useNavigate } from 'react-router-dom';
 
 const FoodPartnerRegisterPage = () => {
@@ -17,8 +17,8 @@ const FoodPartnerRegisterPage = () => {
     const password = formData.get('password');
 
     try {
-      const response = await axios.post(
-        'http://localhost:3000/api/auth/foodpartner/register',
+      const response = await api.post(
+        '/api/auth/foodpartner/register',
         {
           restaurentName,
           username,

@@ -1,11 +1,13 @@
+
 import { useEffect, useState } from 'react'
-import axios from 'axios'
+import api from '../../api/axios'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import './FoodPartnerProfile.css'
 
 const FoodPartnerProfile = () => {
   const { partnerId } = useParams()
   const navigate = useNavigate()
+
   const [profile, setProfile] = useState(null)
   const [currentPartnerId, setCurrentPartnerId] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -20,9 +22,8 @@ const FoodPartnerProfile = () => {
       setErrorMessage('')
 
       try {
-        const response = await axios.get(
-          `http://localhost:3000/api/food/partners/${partnerId}`,
-          { withCredentials: true },
+        const response = await api.get(
+          `/api/food/partners/${partnerId}`,
         )
 
         if (isMounted) {
@@ -44,14 +45,9 @@ const FoodPartnerProfile = () => {
       }
     }
 
-    fetchProfile()
-
     const fetchCurrentPartner = async () => {
       try {
-        const response = await axios.get(
-          'http://localhost:3000/api/auth/foodpartner/me',
-          { withCredentials: true },
-        )
+        const response = await api.get('/api/auth/foodpartner/me')
 
         if (isMounted) {
           setCurrentPartnerId(response.data.id)
@@ -63,6 +59,7 @@ const FoodPartnerProfile = () => {
       }
     }
 
+    fetchProfile()
     fetchCurrentPartner()
 
     return () => {
@@ -74,15 +71,16 @@ const FoodPartnerProfile = () => {
     setIsLoggingOut(true)
 
     try {
-      await axios.get('http://localhost:3000/api/auth/foodpartner/logout', {
-        withCredentials: true,
-      })
+      await api.get('/api/auth/foodpartner/logout')
+
       navigate('/foodpartner/login', { replace: true })
     } catch (error) {
       console.error('Food partner logout error:', error)
+
       setErrorMessage(
         error.response?.data?.message || 'Unable to log out. Please try again.',
       )
+
       setIsLoggingOut(false)
     }
   }
@@ -95,7 +93,7 @@ const FoodPartnerProfile = () => {
     )
   }
 
-  if (errorMessage) {
+  if (errorMessage && !profile) {
     return (
       <main className="partner-profile-state" role="alert">
         <p>{errorMessage}</p>
@@ -113,6 +111,7 @@ const FoodPartnerProfile = () => {
           <Link className="partner-profile__back" to="/user/dashboard">
             <span aria-hidden="true">&larr;</span> Back to videos
           </Link>
+
           {currentPartnerId === partnerId && (
             <button
               className="partner-profile__logout"
@@ -124,14 +123,20 @@ const FoodPartnerProfile = () => {
             </button>
           )}
         </div>
+
         <div className="partner-profile__identity">
           <p className="partner-profile__eyebrow">Food partner</p>
           <h1>{profile.foodPartner.restaurentName}</h1>
-          <p className="partner-profile__name">By {profile.foodPartner.username}</p>
+          <p className="partner-profile__name">
+            By {profile.foodPartner.username}
+          </p>
         </div>
       </header>
 
-      <section className="partner-profile__videos" aria-labelledby="partner-videos-title">
+      <section
+        className="partner-profile__videos"
+        aria-labelledby="partner-videos-title"
+      >
         <div className="partner-profile__section-heading">
           <h2 id="partner-videos-title">Food videos</h2>
           <span>{profile.foodItems.length}</span>
@@ -140,7 +145,10 @@ const FoodPartnerProfile = () => {
         {profile.foodItems.length ? (
           <div className="partner-profile__grid">
             {profile.foodItems.map((foodItem) => (
-              <article className="partner-profile__video-card" key={foodItem._id}>
+              <article
+                className="partner-profile__video-card"
+                key={foodItem._id}
+              >
                 <video
                   src={foodItem.url}
                   controls
@@ -148,11 +156,17 @@ const FoodPartnerProfile = () => {
                   preload="metadata"
                   aria-label={foodItem.title || 'Food video'}
                 />
+
                 <div className="partner-profile__video-copy">
                   <h3>{foodItem.title}</h3>
                   <p>{foodItem.description}</p>
-                  <p className="partner-profile__love-count" aria-label={`${foodItem.loveCount || 0} loves`}>
-                    <span aria-hidden="true">♥</span> {foodItem.loveCount || 0}
+
+                  <p
+                    className="partner-profile__love-count"
+                    aria-label={`${foodItem.loveCount || 0} loves`}
+                  >
+                    <span aria-hidden="true">♥</span>{' '}
+                    {foodItem.loveCount || 0}
                   </p>
                 </div>
               </article>
@@ -164,6 +178,7 @@ const FoodPartnerProfile = () => {
           </p>
         )}
       </section>
+
       {errorMessage && (
         <p className="partner-profile__logout-error" role="alert">
           {errorMessage}
